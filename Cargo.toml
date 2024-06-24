@@ -15,10 +15,16 @@ exclude = [
 ]
 [lib]
 
+[features]
+default = ["cgmath"]
+cgmath = ["dep:cgmath"]
+godot = ["dep:godot"]
 
 [dependencies]
-cgmath = "~0.18"
+cgmath = { version = "~0.18", optional = true }
 itertools = "~0.12"
+godot = { git = "https://github.com/godot-rust/gdext", optional = true }
+
 
 [dev-dependencies]
 criterion = "~0.5"

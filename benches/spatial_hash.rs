@@ -6,7 +6,7 @@ use spatial_hash_3d::*;
 
 #[derive(Debug)]
 pub struct Data {
-    some_data: u32,
+    some_data: i32,
 }
 
 impl Default for Data {
@@ -15,9 +15,9 @@ impl Default for Data {
     }
 }
 
-fn create_and_fill(x: u32, y: u32, z: u32) -> SpatialHashGrid<Data> {
+fn create_and_fill(x: i32, y: i32, z: i32) -> SpatialHashGrid<Data> {
     let mut sh: SpatialHashGrid<Data> =
-        SpatialHashGrid::new(x as usize, y as usize, z as usize, Data::default);
+        SpatialHashGrid::new(x as i32, y as i32, z as i32, Data::default);
     let mut count = 0;
     for (i, j, k) in itertools::iproduct!(0..x, 0..y, 0..z) {
         let pos = Vector3::new(i, j, k);
@@ -30,10 +30,10 @@ fn create_and_fill(x: u32, y: u32, z: u32) -> SpatialHashGrid<Data> {
 /// Creates random bounding boxes within x,y,z size
 fn generate_bounding_box(
     rng: &mut SmallRng,
-    x: u32,
-    y: u32,
-    z: u32,
-) -> (Vector3<u32>, Vector3<u32>) {
+    x: i32,
+    y: i32,
+    z: i32,
+) -> (Vector3<i32>, Vector3<i32>) {
     let min = Vector3::new(
         rng.gen_range(0..(x - 2)),
         rng.gen_range(0..(y - 2)),
@@ -50,15 +50,15 @@ fn generate_bounding_box(
     (min, max)
 }
 
-fn bench_get_filled_data(sh: &SpatialHashGrid<Data>, min: Vector3<u32>, max: Vector3<u32>) {
+fn bench_get_filled_data(sh: &SpatialHashGrid<Data>, min: Vector3<i32>, max: Vector3<i32>) {
     for (c, elem) in sh.iter_cubes(min, max) {
         black_box(c);
         black_box(elem);
     }
 }
 
-fn bench_modify_filled_data(sh: &mut SpatialHashGrid<Data>, min: Vector3<u32>, max: Vector3<u32>) {
-    for (c,idx, elem) in sh.iter_cubes_mut(min, max) {
+fn bench_modify_filled_data(sh: &mut SpatialHashGrid<Data>, min: Vector3<i32>, max: Vector3<i32>) {
+    for (c, idx, elem) in sh.iter_cubes_mut(min, max) {
         elem.some_data += c.x;
         black_box(idx);
     }
@@ -71,7 +71,7 @@ pub fn bench_get_data_if_there(c: &mut Criterion) {
 
     let mut group = c.benchmark_group("lookups");
 
-    for size in [5u32, 10, 20] {
+    for size in [5i32, 10, 20] {
         group.bench_with_input(
             criterion::BenchmarkId::from_parameter(size),
             &size,
@@ -94,7 +94,7 @@ pub fn bench_get_data_if_there(c: &mut Criterion) {
     drop(group);
     let mut group = c.benchmark_group("edits");
 
-    for size in [5u32, 10, 20] {
+    for size in [5i32, 10, 20] {
         group.bench_with_input(
             criterion::BenchmarkId::from_parameter(size),
             &size,
@@ -125,7 +125,7 @@ pub fn bench_get_data_if_there(c: &mut Criterion) {
 
 pub fn bench_fill_data(c: &mut Criterion) {
     let mut group = c.benchmark_group("writes");
-    for size in [5u32, 10, 20] {
+    for size in [5i32, 10, 20] {
         group.bench_with_input(
             criterion::BenchmarkId::from_parameter(size),
             &size,
