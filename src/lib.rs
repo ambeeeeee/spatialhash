@@ -11,11 +11,34 @@ type Vector3i = cgmath::Vector3<i32>;
 type Vector3i = godot::builtin::Vector3i;
 
 #[cfg(all(feature = "godot", feature = "cgmath"))]
-compile_error!("enable either `godot` or `cgmath` feature, not both");
+compile_error!("enable either `godot` or `cgmath` feature, not both.\nmaybe you're missing an `default-features = false` directive?");
 
 type BackingStorage<D> = Vec<D>;
 
-/// Spatial hash data structure. see crate docs for usage.
+/// Spatial hash data structure.
+///
+/// Efficiently translates spatital requests into cells. Any [`Sized`] type can be stored
+/// within the [`SpatialHashGrid`]. Items are stored linearly to improve cache locality.
+///
+/// # Usage
+/// ```
+/// use spatial_hash_3d::SpatialHashGrid;
+/// use cgmath::Vector3;
+///
+/// // Create a spatial hash grid of size 5x10x20, with all entries initialized to 0
+/// let mut spatial_hash: SpatialHashGrid<u64> = SpatialHashGrid::new(5, 10, 20, || {0});
+///
+/// // Set the value of the cell at coordinates (1, 2, 3)
+/// spatial_hash[Vector3::new(1, 2, 3)] = 42;
+///
+/// // Iterate by mutable reference over all cells within a given bounding volume
+/// for (coordinate, _, mut cell) in spatial_hash.iter_cubes_mut(Vector3::new(1, 2, 3), Vector3::new(4, 5, 4)) {
+///     *cell += 1;
+///
+///     // Print the cell's value, along with the coordinates of the cell
+///     println!("{coordinate:?} {cell}");
+/// }
+/// ```
 pub struct SpatialHashGrid<D: Sized> {
     dims: Vector3i,
     cubes: BackingStorage<D>,
