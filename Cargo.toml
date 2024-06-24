@@ -23,7 +23,7 @@ godot = ["dep:godot"]
 [dependencies]
 cgmath = { version = "~0.18", optional = true }
 itertools = "~0.12"
-godot = { git = "https://github.com/godot-rust/gdext", optional = true }
+godot = { version = "0.1", optional = true }
 
 
 [dev-dependencies]
